@@ -4,6 +4,7 @@ import { app, gameState, sprites } from './game';
 import { createField, fieldContainer } from './field';
 import { createNewDiamonds, diamondContainer } from './gravity';
 import { clearDiamonds, diamondArr, recursionCombination } from './diamonds';
+import { movesLevel, target, targetLevel } from './targets';
 
 let menuContainer;
 let startGame;
@@ -127,6 +128,7 @@ const startGameBtn = () => {
         createField();
         createNewDiamonds();
         pauseBtn();
+        target();
         setTimeout(() => recursionCombination(), 2000);
     })
     menuContainer.addChild(startGame);
@@ -212,6 +214,10 @@ const restartGameBtn = () => {
             pauseContainer.visible = true;
             fieldContainer.visible = true;
             gameState.move = false;
+            gameState.targetLevelAmount = 300;
+            gameState.movesAmount = 50;
+            movesLevel.text = `Moves: ${gameState.movesAmount}`;
+            targetLevel.text = `Crash ${gameState.targetLevelAmount} diamonds`;
             console.log('restart');
         })
         restartGame.on('pointerover', () => {

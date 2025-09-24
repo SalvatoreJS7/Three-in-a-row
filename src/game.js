@@ -4,6 +4,7 @@ import { recursionCombination } from './diamonds';
 import { createNewDiamonds } from './gravity';
 import { assets } from './assets';
 import { menu } from './menu';
+import { target } from './targets';
 
 export const app = new PIXI.Application();
 await app.init({
@@ -34,6 +35,9 @@ export const gameState = {
     restartGameActive: false,
     pauseActive: false,
     backLightTicker: false,
+    level: 1,
+    targetLevelAmount: 300,
+    movesAmount: 50,
 }
 
 const createScene = async () => {

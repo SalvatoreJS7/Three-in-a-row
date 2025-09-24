@@ -2,11 +2,13 @@ import * as PIXI from 'pixi.js';
 import { app, gameState, level } from './game';
 import { diamondArr } from './diamonds';
 import { fieldSize, widthField } from './field';
+import { targerCheck } from './targets';
 
 export const bombBonus = (startIndex) => {
 
     level[startIndex] = null;
     let toRemove = [];
+    let counterTarget = 0;
 
     if ((startIndex + 1) % widthField === 0) {
         toRemove.push(startIndex - widthField - 1);
@@ -51,7 +53,10 @@ export const bombBonus = (startIndex) => {
         diamondArr[element].destroy({children: true});
         diamondArr[element] = '';
         level[element] = null;
+        counterTarget += 1;
     })
+
+    targerCheck(counterTarget);
 
 
 }

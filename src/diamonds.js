@@ -5,6 +5,7 @@ import { fieldSize, heightField, sizeRect, widthField } from './field';
 import { createNewDiamonds, diamondContainer, diamondsGravity } from './gravity';
 import { bonusBombSound, diamondExplosionSound, diamondSwitch, diamondSwitchBack } from './sounds';
 import { bombBonus } from './bonuses';
+import { movesAmountChange, targerCheck, targetLevel } from './targets';
 
 let backlightTicker;
 let direction;
@@ -265,6 +266,8 @@ const eventOn = (diamond) => {
                                 diamondArr[element].destroy({children: true});
                                 diamondArr[element] = '';
                             });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
                             bombBonus(gameState.activeDiamond.index);
                             gameState.activeIndex = null;
                             gameState.activeDiamond = null;
@@ -284,6 +287,8 @@ const eventOn = (diamond) => {
                                 diamondArr[element].destroy({children: true});
                                 diamondArr[element] = '';
                             });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
                             bombBonus(diamond.index);
                             gameState.activeIndex = null;
                             gameState.activeDiamond = null;
@@ -313,6 +318,8 @@ const eventOn = (diamond) => {
                                 // diamondArr[element].destroy({children: true});
                                 diamondArr[element] = '';
                             })
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
                             
                             diamondsGravity(diamondArr, level);
                             createNewDiamonds(); 
@@ -328,6 +335,7 @@ const eventOn = (diamond) => {
                             level[diamond.index] = diamond.color;
                             console.log(level)
                             diamondSwitchBack.play();
+                            movesAmountChange();
                             const diamondMoveBackTicker = () => {
                                
                                 diamond.x -= stepValue;
@@ -791,6 +799,7 @@ export const recursionCombination = () => {
                 animationDestroyDiamond(diamondArr[element]);
                 diamondArr[element] = '';
         })
+        targerCheck(toRemove.length);
         diamondExplosionSound.play();
         diamondsGravity(diamondArr, level); 
         createNewDiamonds();
