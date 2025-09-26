@@ -38,6 +38,7 @@ export const gameState = {
     level: 1,
     targetLevelAmount: 300,
     movesAmount: 50,
+    time: {minutes: 10, seconds: 0},
 }
 
 const createScene = async () => {

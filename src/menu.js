@@ -4,7 +4,7 @@ import { app, gameState, sprites } from './game';
 import { createField, fieldContainer } from './field';
 import { createNewDiamonds, diamondContainer } from './gravity';
 import { clearDiamonds, diamondArr, recursionCombination } from './diamonds';
-import { movesLevel, target, targetLevel } from './targets';
+import { movesLevel, startTimer, stopTimer, target, targetContainer, targetLevel, timerInterval } from './targets';
 
 let menuContainer;
 let startGame;
@@ -85,6 +85,9 @@ const pauseBtn = () => {
             menuContainer.visible = true;
             fieldContainer.visible = false; 
             pauseContainer.visible = false;
+            // clearInterval(timerInterval);
+            stopTimer();
+            targetContainer.visible = false;
             gameState.move = true;
             diamondArr.forEach((element) => {
                 element.visible = false;
@@ -129,6 +132,8 @@ const startGameBtn = () => {
         createNewDiamonds();
         pauseBtn();
         target();
+        // setInterval(timerInterval);
+        startTimer();
         setTimeout(() => recursionCombination(), 2000);
     })
     menuContainer.addChild(startGame);
@@ -161,6 +166,9 @@ const startGameBtn = () => {
         gameState.restartGameActive = true;
         fieldContainer.visible = true;
         pauseContainer.visible = true;
+        targetContainer.visible = true;
+        // setInterval((timerInterval), 1000);
+        startTimer();
         diamondArr.forEach((element) => {
             element.visible = true;
         })
@@ -209,6 +217,10 @@ const restartGameBtn = () => {
             diamondContainer.destroy({children: true});
             clearDiamonds();
             createNewDiamonds();
+            gameState.time.minutes = 10;
+            gameState.time.seconds = 0; 
+            target();
+            startTimer();
             setTimeout(() => recursionCombination(), 1500);
             menuContainer.visible = false;
             pauseContainer.visible = true;

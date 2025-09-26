@@ -4,7 +4,7 @@ import { app, gameState, level, sprites } from './game';
 import { fieldSize, heightField, sizeRect, widthField } from './field';
 import { createNewDiamonds, diamondContainer, diamondsGravity } from './gravity';
 import { bonusBombSound, diamondExplosionSound, diamondSwitch, diamondSwitchBack } from './sounds';
-import { bombBonus } from './bonuses';
+import { bombBonus, bonusRow } from './bonuses';
 import { movesAmountChange, targerCheck, targetLevel } from './targets';
 
 let backlightTicker;
@@ -40,6 +40,29 @@ export const createRandomDiamond = () => {
         });
        
         return bombDiamond;
+    }
+
+    if(Math.random() < 0.06 && Math.random() >= 0.03) {
+        const rowDiamond = new PIXI.Sprite(sprites.bonusRowSprite);
+        rowDiamond.width = sizeRect;
+        rowDiamond.height = sizeRect;
+        rowDiamond.eventMode = 'static';
+        rowDiamond.cursor = 'pointer';
+        rowDiamond.color = 'row';
+        rowDiamond.filters = [new GlowFilter({
+            distance: 20,
+            outerStrength: 0,
+            innerStrength: 0,
+            color: 0xffffff,
+        })];
+
+        rowDiamond.on('pointerdown', () => {
+            if(!gameState.isMoving) {
+                eventOn(rowDiamond);
+            }    
+        });
+       
+        return rowDiamond;
     }
     
     const randomDiamondArr = ['green', 'yellow', 'blue', 'purple'];
@@ -181,58 +204,6 @@ const eventOn = (diamond) => {
 
     if(gameState.move) {
         if (checkNearIndex(diamond.index)) {
-            // if(direction === 'left' && gameState.activeDiamond.color === 'bomb') {
-            //     diamondTickerOff(gameState.activeDiamond);
-            //     const finalPositionActiveDiamond = gameState.activeDiamond.x - 100;
-            //     const finalPositionDiamond = diamond.x + 100;
-            //     diamondSwitch.play();
-            //     const diamondMoveTicker = () => {
-            //         gameState.isMoving = true;
-            //         diamond.x += stepValue;
-            //         gameState.activeDiamond.x -= stepValue;
-            //         stepValue += 0.4;
-            //         value += stepValue;
-                    
-            //         if(value >= sizeRect) {
-            //             value = 0;
-            //             stepValue = 1;
-            //             app.ticker.remove(diamondMoveTicker);
-
-            //             gameState.activeDiamond.x = finalPositionActiveDiamond;
-            //             diamond.x = finalPositionDiamond;
-
-            //             level[gameState.activeDiamond.index] = diamond.color;
-            //             level[diamond.index] = gameState.activeDiamond.color;
-            //             bombBonus();
-            //             checkCombination() 
-                            
-
-            //                 diamondArr[diamond.index] = gameState.activeDiamond; 
-            //                 gameState.activeDiamond.index = diamond.index; 
-            //                 diamond.index = gameState.activeIndex;
-            //                 gameState.activeIndex = null;
-            //                 diamondArr[diamond.index] = diamond;
-            //                 gameState.activeDiamond = null;
-            //                 gameState.move = false;
-            //                 // isMoving = false;
-            //                 diamondExplosionSound.play();
-            //                 toRemove.forEach((element) => {
-            //                     diamondArr[element].destroy({children: true});
-            //                     diamondArr[element] = '';
-            //                 })
-                            
-            //                 diamondsGravity(diamondArr, level);
-            //                 createNewDiamonds(); 
-            //                 setTimeout(() => {
-            //                     recursionCombination();
-            //                 },1000)
-                           
-                            
-                        
-            //         }
-            //     }
-            //     app.ticker.add(diamondMoveTicker)        
-            // }
 
             if(direction === 'left') {
                 diamondTickerOff(gameState.activeDiamond);
@@ -263,7 +234,7 @@ const eventOn = (diamond) => {
                             gameState.activeDiamond.index = diamond.index; 
                             checkCombination(); 
                             toRemove.forEach((element) => {
-                                diamondArr[element].destroy({children: true});
+                                animationDestroyDiamond(diamondArr[element]);
                                 diamondArr[element] = '';
                             });
                             targerCheck(toRemove.length);
@@ -280,16 +251,58 @@ const eventOn = (diamond) => {
                             },1000)
                             return;
                         }
+                        if(gameState.activeDiamond.color === 'row') {
+                            gameState.activeDiamond.index = diamond.index; 
+                            checkCombination(); 
+                            toRemove.forEach((element) => {
+                                animationDestroyDiamond(diamondArr[element]);
+                                diamondArr[element] = '';
+                            });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
+                            bonusRow(gameState.activeDiamond.index);
+                            gameState.activeIndex = null;
+                            gameState.activeDiamond = null;
+                            gameState.move = false;
+                            diamondExplosionSound.play();
+                            diamondsGravity(diamondArr, level);
+                            createNewDiamonds(); 
+                            setTimeout(() => {
+                                recursionCombination();
+                            },1000)
+                            return;
+                        }
                         if(diamond.color === 'bomb') {
                             diamond.index = gameState.activeIndex;
                             checkCombination(); 
                             toRemove.forEach((element) => {
-                                diamondArr[element].destroy({children: true});
+                                animationDestroyDiamond(diamondArr[element]);
                                 diamondArr[element] = '';
                             });
                             targerCheck(toRemove.length);
                             movesAmountChange();
                             bombBonus(diamond.index);
+                            gameState.activeIndex = null;
+                            gameState.activeDiamond = null;
+                            gameState.move = false;
+                            diamondExplosionSound.play();
+                            diamondsGravity(diamondArr, level);
+                            createNewDiamonds(); 
+                            setTimeout(() => {
+                                recursionCombination();
+                            },1000)
+                            return;
+                        }
+                        if(diamond.color === 'row') {
+                            diamond.index = gameState.activeIndex;
+                            checkCombination(); 
+                            toRemove.forEach((element) => {
+                                animationDestroyDiamond(diamondArr[element]);
+                                diamondArr[element] = '';
+                            });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
+                            bonusRow(diamond.index);
                             gameState.activeIndex = null;
                             gameState.activeDiamond = null;
                             gameState.move = false;
@@ -390,10 +403,33 @@ const eventOn = (diamond) => {
                             gameState.activeDiamond.index = diamond.index; 
                             checkCombination(); 
                             toRemove.forEach((element) => {
-                                diamondArr[element].destroy({children: true});
+                                animationDestroyDiamond(diamondArr[element]);
                                 diamondArr[element] = '';
                             });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
                             bombBonus(gameState.activeDiamond.index);
+                            gameState.activeIndex = null;
+                            gameState.activeDiamond = null;
+                            gameState.move = false;
+                            diamondExplosionSound.play();
+                            diamondsGravity(diamondArr, level);
+                            createNewDiamonds(); 
+                            setTimeout(() => {
+                                recursionCombination();
+                            },1000)
+                            return;
+                        }
+                        if(gameState.activeDiamond.color === 'row') {
+                            gameState.activeDiamond.index = diamond.index; 
+                            checkCombination(); 
+                            toRemove.forEach((element) => {
+                                animationDestroyDiamond(diamondArr[element]);
+                                diamondArr[element] = '';
+                            });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
+                            bonusRow(gameState.activeDiamond.index);
                             gameState.activeIndex = null;
                             gameState.activeDiamond = null;
                             gameState.move = false;
@@ -409,10 +445,33 @@ const eventOn = (diamond) => {
                             diamond.index = gameState.activeIndex;
                             checkCombination(); 
                             toRemove.forEach((element) => {
-                                diamondArr[element].destroy({children: true});
+                                animationDestroyDiamond(diamondArr[element]);
                                 diamondArr[element] = '';
                             });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
                             bombBonus(diamond.index);
+                            gameState.activeIndex = null;
+                            gameState.activeDiamond = null;
+                            gameState.move = false;
+                            diamondExplosionSound.play();
+                            diamondsGravity(diamondArr, level);
+                            createNewDiamonds(); 
+                            setTimeout(() => {
+                                recursionCombination();
+                            },1000)
+                            return;
+                        }
+                        if(diamond.color === 'row') {
+                            diamond.index = gameState.activeIndex;
+                            checkCombination(); 
+                            toRemove.forEach((element) => {
+                                animationDestroyDiamond(diamondArr[element]);
+                                diamondArr[element] = '';
+                            });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
+                            bonusRow(diamond.index);
                             gameState.activeIndex = null;
                             gameState.activeDiamond = null;
                             gameState.move = false;
@@ -438,6 +497,8 @@ const eventOn = (diamond) => {
                                 animationDestroyDiamond(diamondArr[element]);
                                 diamondArr[element] = '';
                             })
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
                             diamondsGravity(diamondArr, level);
                             createNewDiamonds(); 
                             setTimeout(() => {
@@ -450,6 +511,7 @@ const eventOn = (diamond) => {
                             level[diamond.index] = diamond.color;
                             console.log(level)
                             diamondSwitchBack.play();
+                            movesAmountChange();
                             const diamondMoveBackTicker = () => {
                                 diamond.x += stepValue;
                                 gameState.activeDiamond.x -= stepValue;
@@ -500,9 +562,11 @@ const eventOn = (diamond) => {
                             gameState.activeDiamond.index = diamond.index; 
                             checkCombination(); 
                             toRemove.forEach((element) => {
-                                diamondArr[element].destroy({children: true});
+                                animationDestroyDiamond(diamondArr[element]);
                                 diamondArr[element] = '';
                             });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
                             bombBonus(gameState.activeDiamond.index);
                             gameState.activeIndex = null;
                             gameState.activeDiamond = null;
@@ -515,14 +579,70 @@ const eventOn = (diamond) => {
                             },1000)
                             return;
                         }
+                        if(gameState.activeDiamond.color === 'row') { 
+                            gameState.activeDiamond.index = diamond.index;
+                            diamond.index = gameState.activeIndex;
+                            diamondArr[gameState.activeDiamond.index] = gameState.activeDiamond;
+                            diamondArr[diamond.index] = diamond;
+
+                            checkCombination(); 
+                            toRemove.forEach((element) => {
+                                animationDestroyDiamond(diamondArr[element]);
+                                diamondArr[element] = '';
+                            });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
+                            bonusRow(gameState.activeDiamond.index);
+                            gameState.activeIndex = null;
+                            gameState.activeDiamond = null;
+                            gameState.move = false;
+                            diamondExplosionSound.play();
+                            diamondsGravity(diamondArr, level);
+                            createNewDiamonds(); 
+                            setTimeout(() => {
+                                recursionCombination();
+                            },1000)
+                            return;
+                        }
                         if(diamond.color === 'bomb') {
+                            // diamond.index = gameState.activeIndex;
+
+                            gameState.activeDiamond.index = diamond.index;
+                            diamond.index = gameState.activeIndex;
+                            diamondArr[gameState.activeDiamond.index] = gameState.activeDiamond;
+                            diamondArr[diamond.index] = diamond;
+                            checkCombination(); 
+                            toRemove.forEach((element) => {
+                                animationDestroyDiamond(diamondArr[element]);
+                                diamondArr[element] = '';
+                            });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
+                            bombBonus(diamond.index);
+                            gameState.activeIndex = null;
+                            gameState.activeDiamond = null;
+                            gameState.move = false;
+                            diamondExplosionSound.play();
+                            diamondsGravity(diamondArr, level);
+                            createNewDiamonds(); 
+                            setTimeout(() => {
+                                recursionCombination();
+                            },1000)
+                            return;
+                        }
+                        if(diamond.color === 'row') {
+                            diamondArr[diamond.index] = gameState.activeDiamond;
+                            diamondArr[gameState.activeIndex] = diamond;
+                            gameState.activeDiamond.index = diamond.index;
                             diamond.index = gameState.activeIndex;
                             checkCombination(); 
                             toRemove.forEach((element) => {
-                                diamondArr[element].destroy({children: true});
+                                animationDestroyDiamond(diamondArr[element]);
                                 diamondArr[element] = '';
                             });
-                            bombBonus(diamond.index);
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
+                            bonusRow(diamond.index);
                             gameState.activeIndex = null;
                             gameState.activeDiamond = null;
                             gameState.move = false;
@@ -548,6 +668,8 @@ const eventOn = (diamond) => {
                                 animationDestroyDiamond(diamondArr[element]);
                                 diamondArr[element] = '';
                             })
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
                             
                             diamondsGravity(diamondArr, level);
                             createNewDiamonds(); 
@@ -562,6 +684,7 @@ const eventOn = (diamond) => {
                             level[diamond.index] = diamond.color;
                             console.log(level)
                             diamondSwitchBack.play();
+                            movesAmountChange();
                             const diamondMoveBackTicker = () => {
                                 diamond.y += stepValue;
                                 gameState.activeDiamond.y -= stepValue;
@@ -612,10 +735,37 @@ const eventOn = (diamond) => {
                             gameState.activeDiamond.index = diamond.index; 
                             checkCombination(); 
                             toRemove.forEach((element) => {
-                                diamondArr[element].destroy({children: true});
+                                animationDestroyDiamond(diamondArr[element]);
                                 diamondArr[element] = '';
                             });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
                             bombBonus(gameState.activeDiamond.index);
+                            gameState.activeIndex = null;
+                            gameState.activeDiamond = null;
+                            gameState.move = false;
+                            diamondExplosionSound.play();
+                            diamondsGravity(diamondArr, level);
+                            createNewDiamonds(); 
+                            setTimeout(() => {
+                                recursionCombination();
+                            },1000)
+                            return;
+                        }
+                        if(gameState.activeDiamond.color === 'row') {
+                            gameState.activeDiamond.index = diamond.index;
+                            diamond.index = gameState.activeIndex;
+                            diamondArr[gameState.activeDiamond.index] = gameState.activeDiamond;
+                            diamondArr[diamond.index] = diamond;
+
+                            checkCombination(); 
+                            toRemove.forEach((element) => {
+                                animationDestroyDiamond(diamondArr[element]);
+                                diamondArr[element] = '';
+                            });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
+                            bonusRow(gameState.activeDiamond.index);
                             gameState.activeIndex = null;
                             gameState.activeDiamond = null;
                             gameState.move = false;
@@ -631,10 +781,36 @@ const eventOn = (diamond) => {
                             diamond.index = gameState.activeIndex;
                             checkCombination(); 
                             toRemove.forEach((element) => {
-                                diamondArr[element].destroy({children: true});
+                                animationDestroyDiamond(diamondArr[element]);
                                 diamondArr[element] = '';
                             });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
                             bombBonus(diamond.index);
+                            gameState.activeIndex = null;
+                            gameState.activeDiamond = null;
+                            gameState.move = false;
+                            diamondExplosionSound.play();
+                            diamondsGravity(diamondArr, level);
+                            createNewDiamonds(); 
+                            setTimeout(() => {
+                                recursionCombination();
+                            },1000)
+                            return;
+                        }
+                        if(diamond.color === 'row') {
+                            diamondArr[diamond.index] = gameState.activeDiamond;
+                            diamondArr[gameState.activeIndex] = diamond;
+                            gameState.activeDiamond.index = diamond.index;
+                            diamond.index = gameState.activeIndex;
+                            checkCombination(); 
+                            toRemove.forEach((element) => {
+                                animationDestroyDiamond(diamondArr[element]);
+                                diamondArr[element] = '';
+                            });
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
+                            bonusRow(diamond.index);
                             gameState.activeIndex = null;
                             gameState.activeDiamond = null;
                             gameState.move = false;
@@ -660,6 +836,8 @@ const eventOn = (diamond) => {
                                 animationDestroyDiamond(diamondArr[element]);
                                 diamondArr[element] = '';
                             })
+                            targerCheck(toRemove.length);
+                            movesAmountChange();
                             diamondsGravity(diamondArr, level);
                             createNewDiamonds(); 
                             setTimeout(() => {
@@ -672,6 +850,7 @@ const eventOn = (diamond) => {
                             level[diamond.index] = diamond.color;
                             console.log(level)
                             diamondSwitchBack.play();
+                            movesAmountChange();
                             const diamondMoveBackTicker = () => {
                                 diamond.y -= stepValue;
                                 gameState.activeDiamond.y += stepValue;
@@ -744,7 +923,7 @@ const checkCombination = () => {
         
         if(counterWidth === width) {
         
-            if(level[index] !== 'bomb' && level[index] === level[index + 1] && level[index] === level[index + 2]) {
+            if(level[index] !== 'bomb' && level[index] !== 'row' && level[index] === level[index + 1] && level[index] === level[index + 2]) {
                 toRemove.push(index, index + 1, index + 2);
                 isCombination = true;
             } 
@@ -754,7 +933,7 @@ const checkCombination = () => {
 
         else{
 
-            if(level[index] !== 'bomb' && level[index] === level[index + 1] && level[index] === level[index + 2]) {
+            if(level[index] !== 'bomb' && level[index] !== 'row' && level[index] === level[index + 1] && level[index] === level[index + 2]) {
                 toRemove.push(index, index + 1, index + 2);
                 isCombination = true;
             } 
@@ -768,7 +947,7 @@ const checkCombination = () => {
     while (indexVertical <= (level.length - 1) - widthField * 2) {
         if(counterHeight === width) {
         
-            if(level[indexVertical] !== 'bomb' && level[indexVertical] === level[indexVertical + widthField] && level[indexVertical] === level[indexVertical + widthField * 2]) {
+            if(level[indexVertical] !== 'bomb' && level[indexVertical] !== 'row' && level[indexVertical] === level[indexVertical + widthField] && level[indexVertical] === level[indexVertical + widthField * 2]) {
                 toRemove.push(indexVertical, indexVertical + widthField, indexVertical + widthField * 2);
                 isCombination = true;
             } 
@@ -778,7 +957,7 @@ const checkCombination = () => {
 
         else{
 
-            if(level[indexVertical] !== 'bomb' && level[indexVertical] === level[indexVertical + widthField] && level[indexVertical] === level[indexVertical + widthField * 2]) {
+            if(level[indexVertical] !== 'bomb' && level[indexVertical] !== 'row' && level[indexVertical] === level[indexVertical + widthField] && level[indexVertical] === level[indexVertical + widthField * 2]) {
                 toRemove.push(indexVertical, indexVertical + widthField, indexVertical + widthField * 2);
                 isCombination = true;
             } 
@@ -825,6 +1004,9 @@ const isMovePossible = () => {
     for(let i = 0; i < level.length; i++) {
         activeColor = level[i];
         if(activeColor = 'bomb') {
+            return false;
+        }
+        if(activeColor = 'row') {
             return false;
         }
         if((i + 1) % widthField !== 0 && i < level.length - 1) {
@@ -914,7 +1096,7 @@ export const clearDiamonds = () => {
 //     app.ticker.add(animation);
 // }
 
-const animationDestroyDiamond = (diamond) => {
+export const animationDestroyDiamond = (diamond) => {
     // Сохраняем исходный размер, чтобы уменьшение было относительно него
     const originalScaleX = diamond.scale.x;
     const originalScaleY = diamond.scale.y;
