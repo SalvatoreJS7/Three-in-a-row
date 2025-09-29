@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Howl, Howler } from 'howler';
-import { app, gameState, sprites } from './game';
-import { createField, fieldContainer } from './field';
+import { app, gameState, levelStart, sprites } from './game';
+import { clearField, createField, fieldContainer } from './field';
 import { createNewDiamonds, diamondContainer } from './gravity';
 import { clearDiamonds, diamondArr, recursionCombination } from './diamonds';
 import { movesLevel, startTimer, stopTimer, target, targetContainer, targetLevel, timerInterval } from './targets';
@@ -67,7 +67,7 @@ export const menu = () => {
     app.stage.addChild(menuContainer);
 }
 
-const pauseBtn = () => {
+export const pauseBtn = () => {
     pauseContainer = new PIXI.Container();
     const pause = new PIXI.Sprite(sprites.pauseSprite);
     pause.width = 100;
@@ -125,16 +125,9 @@ const startGameBtn = () => {
         startGame.style.fill = '#06dee6ff';
     })
     startGame.on('pointerdown', () => {
-        // clearMenu();
         menuContainer.visible = false;
         gameState.restartGameActive = true;
-        createField();
-        createNewDiamonds();
-        pauseBtn();
-        target();
-        // setInterval(timerInterval);
-        startTimer();
-        setTimeout(() => recursionCombination(), 2000);
+        levelStart();
     })
     menuContainer.addChild(startGame);
     }
@@ -216,18 +209,20 @@ const restartGameBtn = () => {
             gameState.isMoving = true;
             diamondContainer.destroy({children: true});
             clearDiamonds();
-            createNewDiamonds();
-            gameState.time.minutes = 10;
-            gameState.time.seconds = 0; 
-            target();
-            startTimer();
-            setTimeout(() => recursionCombination(), 1500);
+            clearField();
+            // createNewDiamonds();
+            // gameState.time.minutes = 10;
+            // gameState.time.seconds = 0; 
+            // target();
+            // startTimer();
+            // setTimeout(() => recursionCombination(), 1500);
             menuContainer.visible = false;
             pauseContainer.visible = true;
             fieldContainer.visible = true;
             gameState.move = false;
-            gameState.targetLevelAmount = 300;
-            gameState.movesAmount = 50;
+            // gameState.targetLevelAmount = 150;
+            // gameState.movesAmount = 15;
+            levelStart();
             movesLevel.text = `Moves: ${gameState.movesAmount}`;
             targetLevel.text = `Crash ${gameState.targetLevelAmount} diamonds`;
             console.log('restart');

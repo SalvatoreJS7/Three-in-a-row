@@ -24,8 +24,9 @@ export const target = () => {
     })
     targetLevel.anchor.set(0.5);
     targetContainer.addChild(targetLevel);
-
-    movesLevel = new PIXI.Text({
+    
+    if(gameState.level === 1) {
+        movesLevel = new PIXI.Text({
         text: `Moves: ${gameState.movesAmount}`,
         style: {
             fontFamily: 'Arial',
@@ -34,24 +35,31 @@ export const target = () => {
             fontWeight: 'bold',
             stroke: { color: '#002fffff', width: 1 },
         }
-    })
-    movesLevel.anchor.set(0.5);
-    movesLevel.y = 100;
-    targetContainer.addChild(movesLevel);
+        })
+        movesLevel.anchor.set(0.5);
+        movesLevel.y = 100;
+        targetContainer.addChild(movesLevel);
+    }
 
-    timer = new PIXI.Text({
-        text: `Time: ${gameState.time.minutes}:${gameState.time.seconds}`,
-        style: {
-            fontFamily: 'Arial',
-            fontSize: 26,
-            fill: '#e22424ff',
-            fontWeight: 'bold',
-            stroke: { color: '#002fffff', width: 1 },
-        }
-    })
-    timer.anchor.set(0.5);
-    timer.y = 200;
-    targetContainer.addChild(timer);
+    
+
+    if(gameState.level === 2) {
+        timer = new PIXI.Text({
+            text: `Time: ${gameState.time.minutes}:${gameState.time.seconds}`,
+            style: {
+                fontFamily: 'Arial',
+                fontSize: 26,
+                fill: '#e22424ff',
+                fontWeight: 'bold',
+                stroke: { color: '#002fffff', width: 1 },
+            }
+        })
+        timer.anchor.set(0.5);
+        timer.y = 200;
+        targetContainer.addChild(timer);
+    }
+
+    
 
     targetContainer.x = 250;
     targetContainer.y = 200;
