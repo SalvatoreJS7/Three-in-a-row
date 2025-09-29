@@ -19,7 +19,7 @@ export const createRandomDiamond = () => {
     // const yellowDiamondSprite = await PIXI.Assets.load('assets/sprites/yellow_diamond4.1.png');
     // const bombDiamondSprite = await PIXI.Assets.load('assets/sprites/bonus_bomb_diamond.png');
 
-    if(Math.random() < 0.03) {
+    if(Math.random() < 0.01) {
         const bombDiamond = new PIXI.Sprite(sprites.bombDiamondSprite);
         bombDiamond.width = sizeRect;
         bombDiamond.height = sizeRect;
@@ -42,7 +42,7 @@ export const createRandomDiamond = () => {
         return bombDiamond;
     }
 
-    if(Math.random() < 0.06 && Math.random() >= 0.03) {
+    else if(Math.random() < 0.02) {
         const rowDiamond = new PIXI.Sprite(sprites.bonusRowSprite);
         rowDiamond.width = sizeRect;
         rowDiamond.height = sizeRect;

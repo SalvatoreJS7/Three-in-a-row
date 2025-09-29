@@ -18,14 +18,7 @@ app.stage.sortableChildren = true;
 
 export let sprites;
 
-export const level = [
-    'blue','green','green','yellow','blue','yellow',
-    'green','blue','purple','yellow','blue','green',
-    'purple','purple','green','purple','yellow','purple',
-    'green','blue','blue','purple','purple','green',
-    'blue','green','green','blue','purple','green',
-    'yellow','purple','purple','green','green','blue',
-]
+export const level = [];
 
 export const gameState = {
     move: false,

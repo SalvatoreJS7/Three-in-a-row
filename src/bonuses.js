@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { app, gameState, level } from './game';
+import { app, gameState, level, sprites } from './game';
 import { animationDestroyDiamond, diamondArr } from './diamonds';
 import { fieldContainer, fieldSize, sizeRect, widthField } from './field';
 import { targerCheck } from './targets';
@@ -46,15 +46,19 @@ export const bombBonus = (startIndex) => {
         if(level[element] === 'bomb') {
             bombBonus(element);
         }
-        if(level[element] === 'row') {
-            bonusRow(element);
-        }
+        // if(level[element] === 'row') {
+        //     bonusRow(element);
+        // }
     })
 
     toRemove.forEach((element) => {
         if(!diamondArr[element]) return;
-        diamondArr[element].destroy({children: true});
+        // diamondArr[element].destroy({children: true});
+        bombBonusAnimation(diamondArr[element]);
         diamondArr[element] = '';
+        if(level[element] === 'row') {
+            bonusRow(element);
+        }
         level[element] = null;
         counterTarget += 1;
     })
@@ -86,6 +90,34 @@ export const bonusRow = (activeIndex) => {
 
     bonusRowAnimation(activeRow);
     targerCheck(counterTarget);
+}
+
+const bombBonusAnimation = (diamond) => {
+    let positionX = diamond.x;
+    let positionY = diamond.y;
+    diamond.destroy({children: true});
+    const explosion = new PIXI.Sprite(sprites.bombExplosionSprite);
+    explosion.x = positionX;
+    explosion.y = positionY;
+
+    explosion.anchor.set(0.5);
+    explosion.x = positionX + sizeRect / 2;
+    explosion.y = positionY + sizeRect / 2;
+
+    
+    explosion.scale.set(0);
+    let value = 0.1
+    const explosionTicker = () => {
+        value += 0.005;
+        explosion.scale.set(value);
+        if(value >= 0.2) {
+            app.ticker.remove(explosionTicker);
+            explosion.destroy({children: true});
+        }
+    }
+    app.ticker.add(explosionTicker);
+
+    fieldContainer.addChild(explosion);
 }
 
 const bonusRowAnimation = (row) => {

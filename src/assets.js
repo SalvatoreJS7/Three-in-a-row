@@ -12,6 +12,7 @@ export const assets = async () => {
     sprites.yellowDiamondSprite = await PIXI.Assets.load('assets/sprites/yellow_diamond4.1.png');
     sprites.pauseSprite = await PIXI.Assets.load('assets/sprites/pause2.png');
     sprites.bonusRowSprite = await PIXI.Assets.load('assets/sprites/diamond_horizontal.png');
+    sprites.bombExplosionSprite = await PIXI.Assets.load('assets/sprites/explosion2.png');
 
     return sprites;
 }
