@@ -6,6 +6,7 @@ import { createNewDiamonds, diamondContainer, diamondsGravity } from './gravity'
 import { bonusBombSound, diamondExplosionSound, diamondSwitch, diamondSwitchBack } from './sounds';
 import { bombBonus, bonusRow } from './bonuses';
 import { movesAmountChange, targerCheck, targetLevel } from './targets';
+import { gameOver } from './gameover';
 
 let backlightTicker;
 let direction;
@@ -42,7 +43,7 @@ export const createRandomDiamond = () => {
         return bombDiamond;
     }
 
-    else if(Math.random() < 0.02) {
+    else if(Math.random() < 0.02 && gameState.level > 1) {
         const rowDiamond = new PIXI.Sprite(sprites.bonusRowSprite);
         rowDiamond.width = sizeRect;
         rowDiamond.height = sizeRect;
@@ -369,6 +370,9 @@ const eventOn = (diamond) => {
                                     gameState.activeDiamond = null;
                                     gameState.move = false;
                                     gameState.isMoving = false;
+                                    if(gameState.movesAmount <= 0) {
+                                        gameOver();
+                                    }
                                 }
                             }
                             app.ticker.add(diamondMoveBackTicker); 
@@ -994,7 +998,11 @@ export const recursionCombination = () => {
     }
 
     else{
+        if(gameState.movesAmount <= 0) {
+            gameOver();
+        }
         gameState.isMoving = false;
+
     }
     
 }

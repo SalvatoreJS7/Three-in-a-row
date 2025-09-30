@@ -3,7 +3,7 @@ import { clearField, createField } from './field';
 import { recursionCombination } from './diamonds';
 import { createNewDiamonds } from './gravity';
 import { assets } from './assets';
-import { menu, pauseBtn } from './menu';
+import { menu, pauseBtn, pauseContainer } from './menu';
 import { target } from './targets';
 
 export const app = new PIXI.Application();
@@ -37,6 +37,7 @@ export const gameState = {
 const createScene = async () => {
     sprites = await assets();
     menu();
+    pauseBtn();
     // createField();
     // createDiamonds(level1);
 }
@@ -46,10 +47,10 @@ createScene();
 export const levelStart = () => {
     if(gameState.level === 1) {
         gameState.targetLevelAmount = 150;
-        gameState.movesAmount = 15;
+        gameState.movesAmount = 2;
         createField();
         createNewDiamonds();
-        pauseBtn();
+        pauseContainer.visible = true;
         target();
         setTimeout(() => recursionCombination(), 2000);
     }

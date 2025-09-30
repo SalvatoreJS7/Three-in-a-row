@@ -29,3 +29,9 @@ export const bonusBombSound = new Howl({
     volume: 0.7,                      
     loop: false,                       
 });
+
+export const gameOverSound = new Howl({
+    src: ['assets/sounds/gameover_sound.mp3'],
+    volume: 0.7,
+    loop: false,
+})

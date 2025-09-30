@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { app, gameState } from './game';
 import { sizeRect, widthField } from './field';
+import { gameOver } from './gameover';
 
 export let targetLevel;
 export let movesLevel;
@@ -77,9 +78,13 @@ export const targerCheck = (num) => {
 export const movesAmountChange = () => {
     gameState.movesAmount -= 1;
     movesLevel.text = `Moves: ${gameState.movesAmount}`;
-    if(gameState.movesAmount <= 0) {
-        console.log('Game Over');
-    }
+    // if(gameState.movesAmount <= 0) {
+    //     console.log('Game Over');
+    //     setTimeout(() => {
+    //         gameOver();
+    //     }, 1000)
+        
+    // }
 }
 
 // export const timerInterval = () => {

@@ -8,7 +8,7 @@ import { movesLevel, startTimer, stopTimer, target, targetContainer, targetLevel
 
 let menuContainer;
 let startGame;
-let pauseContainer;
+export let pauseContainer;
 let optionsContainer;
 let menuLevelContainer;
 
@@ -69,6 +69,7 @@ export const menu = () => {
 
 export const pauseBtn = () => {
     pauseContainer = new PIXI.Container();
+    pauseContainer.visible = false;
     const pause = new PIXI.Sprite(sprites.pauseSprite);
     pause.width = 100;
     pause.height = 100;
@@ -175,7 +176,7 @@ const startGameBtn = () => {
     }
 }
 
-const restartGameBtn = () => {
+export const restartGameBtn = () => {
     if (!gameState.restartGameActive) {
         const restartGame = new PIXI.Text({
         text: 'Restart Game',
@@ -217,7 +218,7 @@ const restartGameBtn = () => {
             // startTimer();
             // setTimeout(() => recursionCombination(), 1500);
             menuContainer.visible = false;
-            pauseContainer.visible = true;
+            // pauseContainer.visible = true;
             fieldContainer.visible = true;
             gameState.move = false;
             // gameState.targetLevelAmount = 150;
