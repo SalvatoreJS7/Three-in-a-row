@@ -4,7 +4,7 @@ import { recursionCombination } from './diamonds';
 import { createNewDiamonds } from './gravity';
 import { assets } from './assets';
 import { menu, pauseBtn, pauseContainer } from './menu';
-import { target } from './targets';
+import { startTimer, target } from './targets';
 
 export const app = new PIXI.Application();
 await app.init({
@@ -29,9 +29,11 @@ export const gameState = {
     pauseActive: false,
     backLightTicker: false,
     level: 1,
-    targetLevelAmount: 0,
-    movesAmount: 0,
-    time: {minutes: 0, seconds: 0},
+    targetLevelAmount: 1,
+    movesAmount: 1,
+    movesAmountActive: false,
+    time: {minutes: 1, seconds: 0},
+    timerActive: false,
 }
 
 const createScene = async () => {
@@ -47,7 +49,22 @@ createScene();
 export const levelStart = () => {
     if(gameState.level === 1) {
         gameState.targetLevelAmount = 150;
-        gameState.movesAmount = 2;
+        gameState.movesAmount = 15;
+        gameState.movesAmountActive = true;
+        createField();
+        createNewDiamonds();
+        pauseContainer.visible = true;
+        target();
+        setTimeout(() => recursionCombination(), 2000);
+    }
+
+    if(gameState.level === 2) {
+        gameState.movesAmountActive = false;
+        gameState.targetLevelAmount = 150;
+        gameState.timerActive = true;
+        gameState.time.minutes = 1;
+        gameState.time.seconds = 0;
+        startTimer();
         createField();
         createNewDiamonds();
         pauseContainer.visible = true;

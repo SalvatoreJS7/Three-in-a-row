@@ -76,4 +76,5 @@ export const gameOver = () => {
     gameOverContainer.x = app.screen.width / 2;
     gameOverContainer.y = app.screen.height / 2;
     app.stage.addChild(gameOverContainer);
+    gameState.isMoving = true;
 }

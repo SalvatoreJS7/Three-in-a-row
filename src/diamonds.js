@@ -7,6 +7,7 @@ import { bonusBombSound, diamondExplosionSound, diamondSwitch, diamondSwitchBack
 import { bombBonus, bonusRow } from './bonuses';
 import { movesAmountChange, targerCheck, targetLevel } from './targets';
 import { gameOver } from './gameover';
+import { youWin } from './youwin';
 
 let backlightTicker;
 let direction;
@@ -370,7 +371,7 @@ const eventOn = (diamond) => {
                                     gameState.activeDiamond = null;
                                     gameState.move = false;
                                     gameState.isMoving = false;
-                                    if(gameState.movesAmount <= 0) {
+                                    if(gameState.movesAmount <= 0 || (gameState.time.minutes === 0 && gameState.time.seconds === 0)) {
                                         gameOver();
                                     }
                                 }
@@ -998,7 +999,11 @@ export const recursionCombination = () => {
     }
 
     else{
-        if(gameState.movesAmount <= 0) {
+        if(gameState.targetLevelAmount <= 0) {
+            youWin();
+            return;
+        }
+        if(gameState.movesAmount <= 0 || (gameState.time.minutes === 0 && gameState.time.seconds === 0) ) {
             gameOver();
         }
         gameState.isMoving = false;

@@ -26,7 +26,7 @@ export const target = () => {
     targetLevel.anchor.set(0.5);
     targetContainer.addChild(targetLevel);
     
-    if(gameState.level === 1) {
+    if(gameState.movesAmountActive) {
         movesLevel = new PIXI.Text({
         text: `Moves: ${gameState.movesAmount}`,
         style: {
@@ -44,7 +44,7 @@ export const target = () => {
 
     
 
-    if(gameState.level === 2) {
+    if(gameState.timerActive) {
         timer = new PIXI.Text({
             text: `Time: ${gameState.time.minutes}:${gameState.time.seconds}`,
             style: {
@@ -56,7 +56,7 @@ export const target = () => {
             }
         })
         timer.anchor.set(0.5);
-        timer.y = 200;
+        timer.y = 100;
         targetContainer.addChild(timer);
     }
 
@@ -72,19 +72,16 @@ export const targerCheck = (num) => {
     targetLevel.text = `Crash ${gameState.targetLevelAmount} diamonds`;
     if(gameState.targetLevelAmount <= 0) {
         console.log('You win');
+        targetLevel.text = `Crash 0 diamonds`;
     }
 }
 
 export const movesAmountChange = () => {
-    gameState.movesAmount -= 1;
-    movesLevel.text = `Moves: ${gameState.movesAmount}`;
-    // if(gameState.movesAmount <= 0) {
-    //     console.log('Game Over');
-    //     setTimeout(() => {
-    //         gameOver();
-    //     }, 1000)
-        
-    // }
+    if(gameState.movesAmountActive) {
+        gameState.movesAmount -= 1;
+        movesLevel.text = `Moves: ${gameState.movesAmount}`;
+    }
+    
 }
 
 // export const timerInterval = () => {
@@ -100,8 +97,13 @@ export const movesAmountChange = () => {
 export const startTimer = () => {
     timerInterval = setInterval(() => {
         if(gameState.time.minutes === 0 && gameState.time.seconds === 0) {
-            console.log('GAME OVER');
             stopTimer();
+            timer.text = `Time: 0:00`;
+            
+            if(!gameState.isMoving) {
+                gameOver();
+            }
+            return;
         }
         if (gameState.time.seconds === 0) {
             gameState.time.seconds = 60;

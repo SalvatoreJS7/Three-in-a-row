@@ -35,3 +35,9 @@ export const gameOverSound = new Howl({
     volume: 0.7,
     loop: false,
 })
+
+export const youWinSound = new Howl({
+    src: ['assets/sounds/winner_sound2.mp3'],
+    volume: 0.7,
+    loop: false,
+})
